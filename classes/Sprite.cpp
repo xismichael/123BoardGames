@@ -1,6 +1,8 @@
 #include "Sprite.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <iostream>
+#include <filesystem>
 
 // Simple helper function to load an image into a OpenGL texture with common settings
 bool Sprite::LoadTextureFromFile(const char* filename)
@@ -8,21 +10,13 @@ bool Sprite::LoadTextureFromFile(const char* filename)
     // Load from file
     int image_width = 0;
     int image_height = 0;
-    unsigned char* image_data = stbi_load(filename, &image_width, &image_height, NULL, 4);
+    std::filesystem::path resourcePath = std::filesystem::path("resources") / filename;
+    std::string newFilename = resourcePath.string();
+    unsigned char* image_data = stbi_load(newFilename.c_str(), &image_width, &image_height, NULL, 4);
     if (image_data == NULL) {
-        // try up one directory
-        char newFilename[1024];             // hmmmm, this is a bit of a hack
-        snprintf(newFilename, sizeof(newFilename), "../%s", filename);
-        image_data = stbi_load(newFilename, &image_width, &image_height, NULL, 4);
-        if (image_data == NULL) {
-            // try up one more directory
-            snprintf(newFilename, sizeof(newFilename), "../../%s", filename);
-            image_data = stbi_load(newFilename, &image_width, &image_height, NULL, 4);
-            if (image_data == NULL) {
-                _size = ImVec2(0, 0);
-                return false;
-            }
-        }
+        _size = ImVec2(0, 0);
+        std::cout << "Failed to load texture: " << newFilename << std::endl;
+        return false;
     }
     _texture = _loadTextureFromMemory(image_data, image_width, image_height);
     stbi_image_free(image_data);

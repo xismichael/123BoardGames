@@ -77,6 +77,16 @@ elseif(WINDOWS)
         winmm.lib
     )
 endif()
+
+# Copy resources to build directory
+add_custom_command(
+  TARGET demo POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${CMAKE_SOURCE_DIR}/resources"
+          "$<TARGET_FILE_DIR:demo>/resources"
+  COMMENT "Copying resources to runtime output dir"
+)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 

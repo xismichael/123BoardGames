@@ -46,7 +46,7 @@ Game::~Game()
 void Game::setNumberOfPlayers(unsigned int n)
 {
 	_players.clear();
-	for (int i = 1; i <= n; i++)
+	for (unsigned int i = 1; i <= n; i++)
 	{
 		Player *player = Player::initWithGame(this);
 //		player->setName( std::format( "Player-{}", i ) );
