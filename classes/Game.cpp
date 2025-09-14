@@ -56,7 +56,7 @@ void Game::setNumberOfPlayers(unsigned int n)
 	}
 	_winner = nullptr;
 	_gameNumber = 0;
-
+	_gameOptions.numberOfPlayers = n;
 	Turn *turn = Turn::initStartOfGame(this);
 	_turns.clear();
 	_turns.push_back(turn);
