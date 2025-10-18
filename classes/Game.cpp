@@ -22,6 +22,7 @@ Game::Game()
 	_winner = nullptr;
 	_lastMove = "";
 	_gameNumber = -1;
+	GameOver = false;
 }
 
 
@@ -69,6 +70,20 @@ void Game::setAIPlayer(unsigned int playerNumber)
 	_gameOptions.AIPlayer = true;
 }
 
+void Game::clearAIPlayer(unsigned int playerNumber)
+{
+	_players.at(playerNumber)->setAIPlayer(false);
+	bool anyAI = false;
+	for (auto & _player : _players) {
+		if (_player->isAIPlayer()) {
+			anyAI = true;
+			break;
+		}
+	}
+	_gameOptions.AIPlayer = anyAI;
+	_gameOptions.AIPlaying = anyAI;
+}
+
 void Game::startGame()
 {
 	std::string startState = stateString();
@@ -93,11 +108,11 @@ void Game::endTurn()
 
 void Game::scanForMouse()
 {
-    //if (gameHasAI() && getCurrentPlayer()->isAIPlayer()) 
-    //{
-    //    updateAI();
-    //    return;
-    //}
+	if (gameHasAI() && getCurrentPlayer()->isAIPlayer()) 
+	{
+	   updateAI();
+	   return;
+	}
 
     ImVec2 mousePos = ImGui::GetMousePos();
     mousePos.x -= ImGui::GetWindowPos().x;
