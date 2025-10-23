@@ -228,8 +228,7 @@ std::string TicTacToe::stateString() const
     // if the bit is null, add '0' to the string
     // finally, return the constructed string
 
-    std::string state;
-    state.reserve(9);
+    std::string state(9, '0');
     for (int i = 0; i < 9; i++) {
         Player* owner = ownerAt(i);
         if (!owner) {
@@ -283,6 +282,35 @@ void TicTacToe::setStateString(const std::string &s)
     }
 }
 
+int TicTacToe::checkForStateWinner(const std::string &s)          
+{
+    std::vector<std::vector<int>> winningCombos = {
+        {0, 1, 2}, {3, 4, 5}, {6, 7, 8},
+        {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
+        {0, 4, 8}, {2, 4, 6}
+    };
+
+    for (const auto& combo : winningCombos) {
+        char c1 = s[combo[0]];
+        char c2 = s[combo[1]];
+        char c3 = s[combo[2]];
+
+        if (c1 != '0' && c1 == c2 && c2 == c3) { 
+            return (c1 == '1') ? 1 : 2;
+        }
+    }
+
+    //check for draw
+    for (char c : s) {
+        if (c == '0') {
+            return -1;
+        }
+    }
+
+    //for draw
+    return 0;
+}
+
 
 //
 // this is the function that will be called by the AI
@@ -292,15 +320,46 @@ void TicTacToe::updateAI()
     // we will implement the AI in the next assignment!
     //a test to place a piece in the first empty square we find
     if (GameOver) return;
+
+    std::string currentState = stateString();
+    int bestMove = -1;
+    int bestScore= -2;
+    int currentPlayer = getCurrentPlayer()->playerNumber() + 1;
     for (int i = 0; i < 9; i++) {
-        int y = i / 3;
-        int x = i % 3;
-        if (!_grid[y][x].bit()) {
-            actionForEmptyHolder(&_grid[y][x]);
-            break;
+        if (currentState[i] == '0') {
+            currentState[i] = (currentPlayer == 1)? '1' : '2';
+            int score = -NegaMax((currentPlayer == 1)? 2 : 1, currentState);
+            if (score >= bestScore) {
+                bestMove = i;
+                bestScore = score;
+            }
+            currentState[i] = '0';
         }
     }
+    std::cout << "AI selects move " << bestMove << " with score " << bestScore << std::endl;
+    actionForEmptyHolder(&(_grid[bestMove / 3][bestMove % 3]));
     endTurn();
 
+}
+
+int TicTacToe::NegaMax(int playerNumber, std::string &currentState)
+{
+    int winner = checkForStateWinner(currentState);
+    if (winner == 0) return 0;
+    if (winner == (playerNumber)) return 1;
+    if (winner == ((playerNumber % 2) + 1)) return -1;
+
+    int curBest = -2;
+    for (int i = 0; i < 9; i++) {
+        if (currentState[i] == '0') {
+            currentState[i] = (playerNumber == 1) ? '1' : '2';
+            int score = -NegaMax((playerNumber == 1)? 2 : 1, currentState);
+            if (score > curBest) {
+                curBest = score;
+            }
+            currentState[i] = '0';
+        }
+    }
+    return curBest;
 }
 

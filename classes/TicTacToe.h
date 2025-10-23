@@ -19,6 +19,7 @@ public:
     void        setUpBoard() override;
 
     Player*     checkForWinner() override;
+    int         checkForStateWinner(const std::string &s);          
     bool        checkForDraw() override;
     std::string initialStateString() override;
     std::string stateString() const override;
@@ -29,6 +30,7 @@ public:
     void        stopGame() override;
 
 	void        updateAI() override;
+    int         NegaMax(int playerNumber, std::string &currentState);
     bool        gameHasAI() override { return true; }
     BitHolder &getHolderAt(const int x, const int y) override { return _grid[y][x]; }
 private:
