@@ -30,7 +30,7 @@ public:
     void        stopGame() override;
 
 	void        updateAI() override;
-    int         NegaMax(int playerNumber, std::string &currentState);
+    int         NegaMax(int playerNumber, std::string &currentState, int alpha, int beta);
     bool        gameHasAI() override { return true; }
     BitHolder &getHolderAt(const int x, const int y) override { return _grid[y][x]; }
 private:

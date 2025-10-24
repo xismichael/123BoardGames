@@ -328,7 +328,7 @@ void TicTacToe::updateAI()
     for (int i = 0; i < 9; i++) {
         if (currentState[i] == '0') {
             currentState[i] = (currentPlayer == 1)? '1' : '2';
-            int score = -NegaMax((currentPlayer == 1)? 2 : 1, currentState);
+            int score = -NegaMax((currentPlayer == 1)? 2 : 1, currentState, -2, 2);
             if (score >= bestScore) {
                 bestMove = i;
                 bestScore = score;
@@ -336,13 +336,12 @@ void TicTacToe::updateAI()
             currentState[i] = '0';
         }
     }
-    std::cout << "AI selects move " << bestMove << " with score " << bestScore << std::endl;
     actionForEmptyHolder(&(_grid[bestMove / 3][bestMove % 3]));
     endTurn();
 
 }
 
-int TicTacToe::NegaMax(int playerNumber, std::string &currentState)
+int TicTacToe::NegaMax(int playerNumber, std::string &currentState, int alpha, int beta)
 {
     int winner = checkForStateWinner(currentState);
     if (winner == 0) return 0;
@@ -353,11 +352,13 @@ int TicTacToe::NegaMax(int playerNumber, std::string &currentState)
     for (int i = 0; i < 9; i++) {
         if (currentState[i] == '0') {
             currentState[i] = (playerNumber == 1) ? '1' : '2';
-            int score = -NegaMax((playerNumber == 1)? 2 : 1, currentState);
+            int score = -NegaMax((playerNumber == 1)? 2 : 1, currentState, -beta, -alpha);
             if (score > curBest) {
                 curBest = score;
             }
             currentState[i] = '0';
+            alpha = std::max(alpha, curBest);
+            if (alpha >= beta) break;
         }
     }
     return curBest;
